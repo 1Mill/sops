@@ -3,7 +3,7 @@ const crypto = require('crypto')
 // TODO: Read from SOPS file
 const UNENCRYPTED_SUFFIX = Object.freeze('_unencrypted')
 
-const decryptValue = ({ authKey, key, value }) => {
+const decryptScalar = ({ authKey, key, value }) => {
 	if (key.endsWith(UNENCRYPTED_SUFFIX)) return value
 
 	// ! Ordering is important
@@ -31,4 +31,4 @@ const decryptValue = ({ authKey, key, value }) => {
 	}
 }
 
-module.exports = { decryptValue }
+module.exports = { decryptScalar }

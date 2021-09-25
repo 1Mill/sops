@@ -1,8 +1,7 @@
-const crypto = require('crypto')
 const fs = require('fs')
 const sopsDecode = require('sops-decoder')
 const { DecryptCommand, KMSClient } = require('@aws-sdk/client-kms')
-const { decryptValue } = require('./decryptValue')
+const { decryptScalar } = require('./decryptScalar')
 
 const fetchNodeEnv = (name) => {
 	return process && process.env && process.env[name]
@@ -71,8 +70,7 @@ class Sops {
 		const result = {}
 		Object.entries(tree).forEach(([k, v]) => {
 			if (k === 'sops') return
-			if (typeof v !== 'string') return
-			result[k] = decryptValue({ authKey: key, key: k, value: v })
+			result[k] = decryptScalar({ authKey: key, key: k, value: v })
 		})
 		console.log(result)
 	}
