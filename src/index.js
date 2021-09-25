@@ -80,10 +80,6 @@ class Sops {
 
 // main()
 
-const sops = new Sops({
-	accessKeyId: 'TODO',
-	region: 'TODO',
-	secretAccessKey: 'TODO',
-})
+const sops = new Sops({})
 
 sops.decrypt()

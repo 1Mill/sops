@@ -3,6 +3,10 @@ version: '3.8'
 services:
   node:
     image: node:14-alpine
+    environment:
+      MILL_SOPS_AWS_ACCESS_KEY_ID: $MILL_SOPS_AWS_ACCESS_KEY_ID
+      MILL_SOPS_AWS_REGION: $MILL_SOPS_AWS_REGION
+      MILL_SOPS_AWS_SECRET_ACCESS_KEY: $MILL_SOPS_AWS_SECRET_ACCESS_KEY
     volumes:
       - ./:/app
     working_dir: /app
