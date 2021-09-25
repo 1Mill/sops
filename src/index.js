@@ -15,10 +15,10 @@ const main = async () => {
 
 class Sops {
 	constructor({
-		accessKeyId = fetchNodeEnv('MILL_LAMBDA_AWS_ACCESS_KEY_ID'),
-		endpoint = fetchNodeEnv('MILL_LAMBDA_AWS_ENDPOINT'),
-		region = fetchNodeEnv('MILL_LAMBDA_AWS_REGION'),
-		secretAccessKey = fetchNodeEnv('MILL_LAMBDA_AWS_SECRET_ACCESS_KEY'),
+		accessKeyId = fetchNodeEnv('MILL_SOPS_AWS_ACCESS_KEY_ID'),
+		endpoint = fetchNodeEnv('MILL_SOPS_AWS_ENDPOINT'),
+		region = fetchNodeEnv('MILL_SOPS_AWS_REGION'),
+		secretAccessKey = fetchNodeEnv('MILL_SOPS_AWS_SECRET_ACCESS_KEY'),
 	}) {
 		// * Credentials
 		this.accessKeyId = accessKeyId
