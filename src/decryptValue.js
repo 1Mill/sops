@@ -16,14 +16,14 @@ const decryptValue = ({ authKey, key, value }) => {
 
 	const cleartext = decryptor.update(Buffer.from(data, 'base64'), undefined, 'utf-8') + decryptor.final('utf-8')
 
-	console.log('!!!!!!!!!!!!!!!!!!!')
-	console.log(cleartext)
-	console.log('!!!!!!!!!!!!!!!!!!!')
-
-
-
-	console.log(decryptor)
-	return 'aaaaaaaaaaaaaaaaaaaaaaaa'
+	switch(type) {
+		case 'bool': return cleartext.toLowerCase() === 'true'
+		case 'bytes': return cleartext
+		case 'float': return parseFloat(cleartext)
+		case 'int': return parseInt(cleartext, 10)
+		case 'str': return cleartext
+		default: throw new Error(`Unknown type ${type}`)
+	}
 }
 
 module.exports = { decryptValue }
