@@ -70,8 +70,8 @@ class Sops {
 
 		const result = {}
 		Object.entries(tree).forEach(([k, v]) => {
-			if (k !== 'hello') return
 			if (k === 'sops') return
+			if (typeof v !== 'string') return
 			result[k] = decryptValue({ authKey: key, key: k, value: v })
 		})
 		console.log(result)
