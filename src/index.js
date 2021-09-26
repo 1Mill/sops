@@ -58,9 +58,8 @@ class Sops {
 
 		const walkAndDecrypt = ({ aad = '', tree }) => {
 			const doValue = ({ aad, value }) => {
-				if (Array.isArray(value)) return 'TODO'
-				if (typeof value === 'object') return 'TODO'
-
+				if (Array.isArray(value)) return value.map(v => doValue({ aad, value: v }))
+				if (typeof value === 'object') return walkAndDecrypt({ aad, tree: value })
 				return decryptScalar({ aad, key, value })
 			}
 
@@ -73,7 +72,9 @@ class Sops {
 		}
 
 		const result = walkAndDecrypt({ tree })
+
 		console.log(result)
+		console.log(result.example_object.someOtherObject.hello.world)
 	}
 }
 
