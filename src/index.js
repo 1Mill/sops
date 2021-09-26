@@ -71,12 +71,9 @@ class Sops {
 			return r
 		}
 
-		const result = walkAndDecrypt({ tree })
-
-		console.log(result)
-		console.log(result.example_object.someOtherObject.hello.world)
+		return walkAndDecrypt({ tree })
 	}
 }
 
 const sops = new Sops({})
-sops.decrypt()
+sops.decrypt().then(console.log)
