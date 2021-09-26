@@ -2,9 +2,7 @@ const fs = require('fs')
 const { DecryptCommand, KMSClient } = require('@aws-sdk/client-kms')
 const { walkAndDecrypt } = require('./walkAndDecrypt')
 
-const fetchNodeEnv = (name) => {
-	return process && process.env && process.env[name]
-}
+const fetchNodeEnv = name => process && process.env && process.env[name]
 
 class Sops {
 	constructor({
