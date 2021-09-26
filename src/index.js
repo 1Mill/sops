@@ -1,8 +1,7 @@
 const fs = require('fs')
 const { DecryptCommand, KMSClient } = require('@aws-sdk/client-kms')
+const { fetchNodeEnv } = require('./fetchNodeEnv')
 const { walkAndDecrypt } = require('./walkAndDecrypt')
-
-const fetchNodeEnv = name => process && process.env && process.env[name]
 
 class Sops {
 	constructor({
@@ -66,3 +65,5 @@ class Sops {
 		return name ? this.secrets[name] : this.secrets
 	}
 }
+
+module.exports = { Sops }
