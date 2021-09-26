@@ -1,6 +1,6 @@
 const fs = require('fs')
 const { DecryptCommand, KMSClient } = require('@aws-sdk/client-kms')
-const { decryptScalar } = require('./decryptScalar')
+const { walkAndDecrypt } = require('./walkAndDecrypt')
 
 const fetchNodeEnv = (name) => {
 	return process && process.env && process.env[name]
@@ -56,22 +56,7 @@ class Sops {
 			if (key) break
 		}
 
-		const walkAndDecrypt = ({ aad = '', tree }) => {
-			const doValue = ({ aad, value }) => {
-				if (Array.isArray(value)) return value.map(v => doValue({ aad, value: v }))
-				if (typeof value === 'object') return walkAndDecrypt({ aad, tree: value })
-				return decryptScalar({ aad, key, value })
-			}
-
-			const r = {}
-			Object.entries(tree).forEach(([k, v]) => {
-				if (k === 'sops') return
-				r[k] = doValue({ aad: `${aad}${k}:`, value: v })
-			})
-			return r
-		}
-
-		return walkAndDecrypt({ tree })
+		return walkAndDecrypt({ tree, key})
 	}
 }
 
