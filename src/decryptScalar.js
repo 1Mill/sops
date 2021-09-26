@@ -3,8 +3,8 @@ const crypto = require('crypto')
 // TODO: Read from SOPS file
 const UNENCRYPTED_SUFFIX = Object.freeze('_unencrypted')
 
-const decryptScalar = ({ authKey, key, value }) => {
-	if (key.endsWith(UNENCRYPTED_SUFFIX)) return value
+const decryptScalar = ({ aad, key, value }) => {
+	if (aad.endsWith(`${UNENCRYPTED_SUFFIX}:`)) return value
 
 	// ! Ordering is important
 	const [
@@ -15,8 +15,8 @@ const decryptScalar = ({ authKey, key, value }) => {
 		type,
 	] = value.match(/^ENC\[AES256_GCM,data:(.+),iv:(.+),tag:(.+),type:(.+)\]/,)
 
-	decryptor = crypto.createDecipheriv('aes-256-gcm', authKey, Buffer.from(iv, 'base64'))
-	decryptor.setAAD(Buffer.from(`${key}:`))
+	decryptor = crypto.createDecipheriv('aes-256-gcm', key, Buffer.from(iv, 'base64'))
+	decryptor.setAAD(Buffer.from(aad))
 	decryptor.setAuthTag(Buffer.from(tag, 'base64'))
 
 	const cleartext = decryptor.update(Buffer.from(data, 'base64'), undefined, 'utf-8') + decryptor.final('utf-8')

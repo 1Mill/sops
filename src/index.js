@@ -56,12 +56,23 @@ class Sops {
 			if (key) break
 		}
 
-		const result = {}
-		Object.entries(tree).forEach(([k, v]) => {
-			if (k === 'sops') return
-			if (typeof v !== 'string') return
-			result[k] = decryptScalar({ authKey: key, key: k, value: v })
-		})
+		const walkAndDecrypt = ({ aad = '', tree }) => {
+			const doValue = ({ aad, value }) => {
+				if (Array.isArray(value)) return 'TODO'
+				if (typeof value === 'object') return 'TODO'
+
+				return decryptScalar({ aad, key, value })
+			}
+
+			const r = {}
+			Object.entries(tree).forEach(([k, v]) => {
+				if (k === 'sops') return
+				r[k] = doValue({ aad: `${aad}${k}:`, value: v })
+			})
+			return r
+		}
+
+		const result = walkAndDecrypt({ tree })
 		console.log(result)
 	}
 }
