@@ -8,6 +8,7 @@ class Sops {
 	constructor({
 		accessKeyId = fetchNodeEnv('MILL_SOPS_AWS_ACCESS_KEY_ID'),
 		endpoint = fetchNodeEnv('MILL_SOPS_AWS_ENDPOINT'),
+		file = fetchNodeEnv('MILL_SOPS_FILE') || fetchNodeEnv('NODE_ENV') === 'production' ? 'prod.secrets.sops.json' : 'dev.secrets.sops.json',
 		region = fetchNodeEnv('MILL_SOPS_AWS_REGION'),
 		secretAccessKey = fetchNodeEnv('MILL_SOPS_AWS_SECRET_ACCESS_KEY'),
 	}) {
@@ -21,9 +22,18 @@ class Sops {
 
 		// * AWS Connection
 		this.client = undefined
+
+		// * Outputs
+		this.file = file
+		this.secrets = {}
+
+		// * Run immediately
+		this._buildSecrets
 	}
 
-	async decrypt() {
+	async _buildSecrets() {
+		if (Object.keys(this.secrets).length !== 0) return
+
 		if (typeof this.client === 'undefined') {
 			this.client = new KMSClient({
 				credentials: {
@@ -35,28 +45,24 @@ class Sops {
 			})
 		}
 
-		const content = fs.readFileSync('./dev.secrets.sops.json', 'utf-8')
-		const tree = JSON.parse(content.toString())
-		const kmsTree = tree.sops.kms
+		const tree = JSON.parse(fs.readFileSync(this.file, 'utf-8').toString())
 
 		let key = null
-		for (const entry of kmsTree) {
-			if (!entry.enc) continue
+		for (const kms of tree.sops.kms) {
+			if (!kms.enc) continue
 
-			const command = new DecryptCommand({
-				CiphertextBlob: Buffer.from(entry.enc, 'base64'),
-				EncryptionContext: entry.context || {},
-			})
+			const command = new DecryptCommand({ CiphertextBlob: Buffer.from(kms.enc, 'base64') })
 			const response = await this.client.send(command)
-			const temp = response.Plaintext
-			key = temp
+			key = response.Plaintext // * Returns as base64
 
 			if (key) break
 		}
 
-		return walkAndDecrypt({ tree, key})
+		this.secrets = walkAndDecrypt({ tree, key })
+	}
+
+	async decrypt(name) {
+		await this._buildSecrets()
+		return name ? this.secrets[name] : this.secrets
 	}
 }
-
-const sops = new Sops({})
-sops.decrypt().then(console.log)
