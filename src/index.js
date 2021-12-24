@@ -13,8 +13,14 @@ class Sops {
 	}) {
 		// * Credentials
 		this.accessKeyId = accessKeyId
+		if (!this.accessKeyId) throw new Error('AWS "accessKeyId" is required')
+
 		this.region = region
+		if (!this.region) throw new Error('AWS "region" is required')
+
 		this.secretAccessKey = secretAccessKey
+		if (!this.secretAccessKey) throw new Error('AWS "secretAccessKey" is required')
+
 
 		// * Optional for development purposes (e.g. localstack)
 		this.endpoint = endpoint
@@ -24,6 +30,8 @@ class Sops {
 
 		// * Outputs
 		this.file = file
+		if (!this.file) throw new Error('SOPS "file" is required')
+
 		this.secrets = {}
 
 		// * Run immediately
