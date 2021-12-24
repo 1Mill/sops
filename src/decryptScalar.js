@@ -27,7 +27,7 @@ const decryptScalar = ({ aad, key, value }) => {
 		case 'float': return parseFloat(cleartext)
 		case 'int': return parseInt(cleartext, 10)
 		case 'str': return cleartext
-		default: throw new Error(`Unknown type ${type}`)
+		default: throw new Error(`Unknown type "${type}"`)
 	}
 }
 
