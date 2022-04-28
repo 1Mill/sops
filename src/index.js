@@ -5,11 +5,12 @@ const { walkAndDecrypt } = require('./walkAndDecrypt')
 
 class Sops {
 	constructor({
-		accessKeyId = fetchNodeEnv('MILL_SOPS_AWS_ACCESS_KEY_ID'),
+		accessKeyId = fetchNodeEnv('MILL_SOPS_AWS_ACCESS_KEY_ID') || fetchNodeEnv('AWS_ACCESS_KEY_ID') || fetchNodeEnv('AWS_ACCESS_KEY'),
 		endpoint = fetchNodeEnv('MILL_SOPS_AWS_ENDPOINT'),
 		file = fetchNodeEnv('MILL_SOPS_FILE') || fetchNodeEnv('NODE_ENV') === 'production' ? 'prod.secrets.sops.json' : 'dev.secrets.sops.json',
-		region = fetchNodeEnv('MILL_SOPS_AWS_REGION'),
-		secretAccessKey = fetchNodeEnv('MILL_SOPS_AWS_SECRET_ACCESS_KEY'),
+		region = fetchNodeEnv('MILL_SOPS_AWS_REGION') || fetchNodeEnv('AWS_REGION'),
+		secretAccessKey = fetchNodeEnv('MILL_SOPS_AWS_SECRET_ACCESS_KEY') || fetchNodeEnv('AWS_SECRET_ACCESS_KEY'),
+		sessionToken = fetchNodeEnv('AWS_SESSION_TOKEN'),
 	}) {
 		// * Credentials
 		this.accessKeyId = accessKeyId
@@ -21,6 +22,7 @@ class Sops {
 		this.secretAccessKey = secretAccessKey
 		if (!this.secretAccessKey) throw new Error('AWS "secretAccessKey" is required')
 
+		this.sessionToken = sessionToken
 
 		// * Optional for development purposes (e.g. localstack)
 		this.endpoint = endpoint
@@ -46,6 +48,7 @@ class Sops {
 				credentials: {
 					accessKeyId: this.accessKeyId,
 					secretAccessKey: this.secretAccessKey,
+					sessionToken: this.sessionToken,
 				},
 				endpoint: this.endpoint,
 				region: this.region,
