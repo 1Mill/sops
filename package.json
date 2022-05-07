@@ -12,7 +12,9 @@
     "src"
   ],
   "scripts": {
-    "build": "rm -rf ./dist && microbundle --entry ./src/*.js",
+    "build": "rm -rf ./dist && npm run build:browser && npm run build:node",
+    "build:browser": "microbundle --format modern,umd --external none",
+    "build:node": "microbundle --format cjs,esm",
     "deploy": "npm run build && npm publish",
     "dev": "microbundle watch"
   },
